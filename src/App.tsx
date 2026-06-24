@@ -16,6 +16,7 @@ import { formatCurrency, formatPercent, ordinalSuffix, generateGaussianCurve } f
 import LoginButton from './components/LoginButton'
 import { useAuth } from './auth/AuthContext'
 import { useSalaryComparison } from './hooks/useSalaryComparison'
+import HRDashboard from './pages/HRDashboard'
 
 function SkeletonBlock({ className }: { className?: string }) {
   return (
@@ -54,6 +55,7 @@ export default function App() {
   const [isDark, setIsDark] = useState(false)
   const [isAccordionOpen, setIsAccordionOpen] = useState(false)
   const [isActionOpen, setIsActionOpen] = useState(false)
+  const [view, setView] = useState<'my-pay' | 'hr-dashboard'>('my-pay')
 
   const { isAuthenticated } = useAuth()
   const salaryResult = useSalaryComparison()
@@ -165,8 +167,40 @@ export default function App() {
             </div>
           </header>
 
-          {/* Loading skeleton */}
-          {isLoading ? (
+          {/* Tab navigation for authenticated HR managers */}
+          {isAuthenticated && (
+            <div className="mb-8 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex gap-1">
+                <button
+                  onClick={() => setView('my-pay')}
+                  className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                    view === 'my-pay'
+                      ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+                      : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                  }`}
+                >
+                  My Pay Profile
+                </button>
+                <button
+                  onClick={() => setView('hr-dashboard')}
+                  className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                    view === 'hr-dashboard'
+                      ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+                      : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                  }`}
+                >
+                  HR Dashboard
+                </button>
+              </div>
+            </div>
+          )}
+
+          {view === 'hr-dashboard' ? (
+            <HRDashboard />
+          ) : (
+            <>
+              {/* Loading skeleton */}
+              {isLoading ? (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -592,6 +626,9 @@ export default function App() {
                 )}
               </AnimatePresence>
             </motion.div>
+          )}
+
+            </>
           )}
 
         </div>
