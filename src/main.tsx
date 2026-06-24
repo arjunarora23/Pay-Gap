@@ -20,7 +20,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               </RequireAuth>
             }
           />
-          <Route path="/salary-comparison" element={<CallbackPage />} />
+          <Route path="/callback" element={<CallbackPage />} />
+          <Route path="/salary-comparison" element={<App />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
