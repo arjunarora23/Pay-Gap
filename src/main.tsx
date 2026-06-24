@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import { AuthProvider } from './auth/AuthContext.tsx'
+import { AuthProvider } from './auth/AuthProvider.tsx'
 import RequireAuth from './auth/RequireAuth.tsx'
 import CallbackPage from './pages/CallbackPage.tsx'
 import LoginPage from './pages/LoginPage.tsx'
@@ -10,7 +10,7 @@ import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter basename="/Pay-Gap">
+    <BrowserRouter>
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -22,8 +22,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               </RequireAuth>
             }
           />
-          <Route path="/" element={<CallbackPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/oauth/callback" element={<CallbackPage />} />
+          <Route path="/" element={<Navigate to="/salary-comparison" replace />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

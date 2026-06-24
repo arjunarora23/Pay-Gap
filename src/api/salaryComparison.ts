@@ -46,14 +46,10 @@ export interface EmploymentMappingResponse {
   employmentId: string
 }
 
-export async function fetchEmploymentMapping(
-  apiBaseUrl: string,
-  accessToken: string,
-): Promise<EmploymentMappingResponse> {
-  const url = `${apiBaseUrl}/employments/mapping`
-  const response = await fetch(url, {
+export async function fetchEmploymentMapping(): Promise<EmploymentMappingResponse> {
+  const response = await fetch('/api/employments/mapping', {
+    credentials: 'include',
     headers: {
-      Authorization: `Bearer ${accessToken}`,
       Accept: 'application/hal+json',
     },
   })
@@ -66,14 +62,11 @@ export async function fetchEmploymentMapping(
 }
 
 export async function fetchSalaryComparison(
-  apiBaseUrl: string,
   employmentId: string,
-  accessToken: string,
 ): Promise<SalaryComparisonResponse> {
-  const url = `${apiBaseUrl}/employments/${employmentId}/salary-comparison`
-  const response = await fetch(url, {
+  const response = await fetch(`/api/employments/${employmentId}/salary-comparison`, {
+    credentials: 'include',
     headers: {
-      Authorization: `Bearer ${accessToken}`,
       Accept: 'application/hal+json',
     },
   })

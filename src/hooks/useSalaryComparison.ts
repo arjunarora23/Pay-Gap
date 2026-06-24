@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useAuth } from '../auth/AuthContext'
-import { env } from '../env'
+import { useAuth } from '../auth/useAuth'
 import { fetchEmploymentMapping, fetchSalaryComparison, SalaryComparisonResponse } from '../api/salaryComparison'
 
 type UseSalaryComparisonResult =
@@ -10,11 +9,11 @@ type UseSalaryComparisonResult =
   | { status: 'error'; error: Error }
 
 export function useSalaryComparison(): UseSalaryComparisonResult {
-  const { accessToken, isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth()
   const [result, setResult] = useState<UseSalaryComparisonResult>({ status: 'idle' })
 
   useEffect(() => {
-    if (!isAuthenticated || !accessToken) {
+    if (!isAuthenticated) {
       setResult({ status: 'idle' })
       return
     }
@@ -22,10 +21,8 @@ export function useSalaryComparison(): UseSalaryComparisonResult {
     let cancelled = false
     setResult({ status: 'loading' })
 
-    fetchEmploymentMapping(env.catalystoneApiBaseUrl, accessToken)
-      .then(({ employmentId }) =>
-        fetchSalaryComparison(env.catalystoneApiBaseUrl, employmentId, accessToken),
-      )
+    fetchEmploymentMapping()
+      .then(({ employmentId }) => fetchSalaryComparison(employmentId))
       .then((data) => {
         if (!cancelled) setResult({ status: 'success', data })
       })
@@ -38,7 +35,7 @@ export function useSalaryComparison(): UseSalaryComparisonResult {
     return () => {
       cancelled = true
     }
-  }, [accessToken, isAuthenticated])
+  }, [isAuthenticated])
 
   return result
 }

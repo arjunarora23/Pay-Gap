@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    { "source": "/api/auth-login", "destination": "/api/auth-login/index" },
+    { "source": "/api/auth-callback", "destination": "/api/auth-callback/index" },
+    { "source": "/api/auth-session", "destination": "/api/auth-session/index" },
+    { "source": "/api/auth-session-details", "destination": "/api/auth-session-details/index" },
+    { "source": "/api/auth-logout", "destination": "/api/auth-logout/index" },
+    { "source": "/api/auth-refresh", "destination": "/api/auth-refresh/index" },
+    { "source": "/api/(.*)", "destination": "/api/[...proxy]" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

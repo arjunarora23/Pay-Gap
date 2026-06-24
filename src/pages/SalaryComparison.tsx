@@ -14,7 +14,7 @@ import { Sun, Moon, ChevronDown } from 'lucide-react'
 import { salaryData, employeeData } from '../data'
 import { formatCurrency, formatPercent, ordinalSuffix, generateGaussianCurve } from '../utils'
 import LoginButton from '../components/LoginButton'
-import { useAuth } from '../auth/AuthContext'
+import { useAuth } from '../auth/useAuth'
 import { useSalaryComparison } from '../hooks/useSalaryComparison'
 
 function SkeletonBlock({ className }: { className?: string }) {

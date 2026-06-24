@@ -1,19 +1,10 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../auth/AuthContext'
 
 export default function CallbackPage() {
-  const navigate = useNavigate()
-  const { isAuthenticated, isLoading } = useAuth()
-
   useEffect(() => {
-    if (isLoading) return
-    if (isAuthenticated) {
-      navigate('/salary-comparison', { replace: true })
-    } else {
-      navigate('/login', { replace: true })
-    }
-  }, [isAuthenticated, isLoading, navigate])
+    const query = globalThis.location.search || ''
+    globalThis.location.replace(`/api/auth-callback${query}`)
+  }, [])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] dark:bg-slate-950">

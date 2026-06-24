@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion'
-import { useAuth } from '../auth/AuthContext'
+import { useAuth } from '../auth/useAuth'
 
 export default function LoginPage() {
-  const { login, isLoading } = useAuth()
+  const { login, loading } = useAuth()
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] dark:bg-slate-950 p-6">
@@ -23,8 +23,8 @@ export default function LoginPage() {
           type="button"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          disabled={isLoading}
-          onClick={() => void login()}
+          disabled={loading}
+          onClick={() => login()}
           className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
         >
           Authorise with CatalystOne
