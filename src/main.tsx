@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <AuthProvider>
         <Routes>
           <Route path="/" element={<App />} />
-          <Route path="/callback" element={<CallbackPage />} />
+          <Route path="/salary-comparison" element={<CallbackPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
