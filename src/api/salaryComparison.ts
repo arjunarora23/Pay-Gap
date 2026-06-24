@@ -38,8 +38,8 @@ export interface SalaryComparisonResponse {
       basicSalary: BasicSalaryData
     }
   }
-  salaryBand: SalaryBandData
-  comparison: ComparisonData
+  salaryBand: SalaryBandData | null
+  comparison: ComparisonData | null
 }
 
 export interface EmploymentMappingResponse {

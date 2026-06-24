@@ -11,7 +11,7 @@ import {
 type UseSalaryComparisonResult =
   | { status: 'idle' }
   | { status: 'loading' }
-  | { status: 'success'; data: SalaryComparisonResponse; employeeName: string }
+  | { status: 'success'; data: SalaryComparisonResponse; employeeName: string; employmentId: string }
   | { status: 'error'; error: Error }
 
 export function useSalaryComparison(): UseSalaryComparisonResult {
@@ -32,12 +32,13 @@ export function useSalaryComparison(): UseSalaryComparisonResult {
         Promise.all([
           fetchSalaryComparison(env.catalystoneMappingApiBaseUrl, employmentGuid, accessToken),
           fetchEmploymentDetails(env.catalystoneMappingApiBaseUrl, employmentGuid, accessToken),
+          Promise.resolve(employmentGuid),
         ]),
       )
-      .then(([data, details]) => {
+      .then(([data, details, employmentGuid]) => {
         if (!cancelled) {
           const { firstName, lastName } = details.employee
-          setResult({ status: 'success', data, employeeName: `${firstName} ${lastName}` })
+          setResult({ status: 'success', data, employeeName: `${firstName} ${lastName}`, employmentId: employmentGuid })
         }
       })
       .catch((error: unknown) => {

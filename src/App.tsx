@@ -17,6 +17,8 @@ import LoginButton from './components/LoginButton'
 import { useAuth } from './auth/AuthContext'
 import { useSalaryComparison } from './hooks/useSalaryComparison'
 import HRDashboard from './pages/HRDashboard'
+import type { EmployeeRecord } from './hooks/useHRDashboard'
+import type { SalaryComparisonResponse } from './api/salaryComparison'
 
 function SkeletonBlock({ className }: { className?: string }) {
   return (
@@ -56,6 +58,14 @@ export default function App() {
   const [isAccordionOpen, setIsAccordionOpen] = useState(false)
   const [isActionOpen, setIsActionOpen] = useState(false)
   const [view, setView] = useState<'my-pay' | 'hr-dashboard'>('my-pay')
+  const [selectedEmployee, setSelectedEmployee] = useState<{ name: string; data: SalaryComparisonResponse } | null>(null)
+
+  const handleViewEmployee = (emp: EmployeeRecord) => {
+    if (!emp.salaryData.comparison) return
+    setSelectedEmployee({ name: emp.name, data: emp.salaryData })
+    setView('my-pay')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const { isAuthenticated } = useAuth()
   const salaryResult = useSalaryComparison()
@@ -73,16 +83,24 @@ export default function App() {
   }, [isAuthenticated, salaryResult.status])
 
   const displayName =
-    isAuthenticated && salaryResult.status === 'success'
+    selectedEmployee?.name ??
+    (isAuthenticated && salaryResult.status === 'success'
       ? salaryResult.employeeName
-      : employeeData.name
+      : !isAuthenticated
+      ? employeeData.name
+      : '')
 
   const displayData =
-    isAuthenticated && salaryResult.status === 'success' && salaryResult.data?.comparison != null
+    selectedEmployee?.data != null
+      ? selectedEmployee.data
+      : isAuthenticated && salaryResult.status === 'success' && salaryResult.data?.comparison != null
       ? salaryResult.data
       : salaryData
 
-  const { currentSalary, salaryBand, comparison } = displayData
+  const { currentSalary, salaryBand: rawBand, comparison: rawComparison } = displayData
+  // Guard above ensures comparison & salaryBand are non-null when displayData is real API data
+  const salaryBand = rawBand!
+  const comparison = rawComparison!
   const amount = currentSalary.components.basicSalary.amount
   const rawCurrency = currentSalary.components.basicSalary.currency
   const currency = typeof rawCurrency === 'string' ? rawCurrency : (rawCurrency.name || rawCurrency.id)
@@ -117,15 +135,25 @@ export default function App() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h1 className="text-3xl font-semibold text-slate-900 dark:text-white tracking-tight">
-                {displayName}'s Pay Profile
-              </h1>
-              {isLoading ? (
-                <div className="h-6 w-48 bg-slate-200 dark:bg-slate-800 animate-pulse rounded mt-2" />
+              {isAuthenticated && isLoading ? (
+                <div className="h-9 w-80 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-xl" />
               ) : (
-                <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg">
-                  {positionTitle}
-                </p>
+                <h1 className="text-3xl font-semibold text-slate-900 dark:text-white tracking-tight">
+                  {view === 'hr-dashboard'
+                    ? 'HR Dashboard'
+                    : selectedEmployee
+                    ? 'Pay Profile'
+                    : 'My Pay Profile'}
+                </h1>
+              )}
+              {view !== 'hr-dashboard' && (
+                isLoading ? (
+                  <div className="h-6 w-48 bg-slate-200 dark:bg-slate-800 animate-pulse rounded mt-2" />
+                ) : (
+                  <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg">
+                    {positionTitle}
+                  </p>
+                )
               )}
             </motion.div>
 
@@ -195,10 +223,25 @@ export default function App() {
             </div>
           )}
 
-          {view === 'hr-dashboard' ? (
-            <HRDashboard />
-          ) : (
+          {/* HR Dashboard — always mounted so state survives tab switches */}
+          <div className={view === 'hr-dashboard' ? '' : 'hidden'}>
+            <HRDashboard
+              onViewEmployee={handleViewEmployee}
+              currentEmploymentId={salaryResult.status === 'success' ? salaryResult.employmentId : undefined}
+            />
+          </div>
+
+          <div className={view !== 'hr-dashboard' ? '' : 'hidden'}>
             <>
+              {/* Back to own profile banner when viewing another employee */}
+              {selectedEmployee && (
+                <button
+                  onClick={() => setSelectedEmployee(null)}
+                  className="mb-4 flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+                >
+                  ← Back to my profile
+                </button>
+              )}
               {/* Loading skeleton */}
               {isLoading ? (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -215,7 +258,7 @@ export default function App() {
                 <SkeletonBlock className="h-64" />
               </div>
             </div>
-          ) : isAuthenticated && salaryResult.status === 'error' ? (
+          ) : isAuthenticated && salaryResult.status === 'error' && !selectedEmployee ? (
             <div className="flex flex-col items-center justify-center py-24 gap-6">
               <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-rose-200 dark:border-rose-800 text-center max-w-md w-full">
                 <p className="text-lg font-semibold text-rose-600 dark:text-rose-400 mb-2">
@@ -604,7 +647,7 @@ export default function App() {
                                 className="absolute bottom-full mb-2 right-0 w-64 sm:min-w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-20"
                               >
                                 <button className="w-full text-left px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-700 dark:text-slate-200 font-medium transition-colors border-b border-slate-100 dark:border-slate-700">
-                                  Talk to {employeeData.managerName}
+                                  Talk to {isAuthenticated ? 'your manager' : employeeData.managerName}
                                 </button>
                                 <button className="w-full text-left px-4 py-3 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-rose-600 dark:text-rose-400 font-medium transition-colors flex justify-between items-center">
                                   Sue your manager
@@ -629,7 +672,7 @@ export default function App() {
           )}
 
             </>
-          )}
+          </div>
 
         </div>
       </div>
