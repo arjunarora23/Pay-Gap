@@ -22,7 +22,7 @@ export function useSalaryComparison(): UseSalaryComparisonResult {
     let cancelled = false
     setResult({ status: 'loading' })
 
-    fetchEmploymentMapping(env.catalystoneApiBaseUrl, accessToken)
+    fetchEmploymentMapping(env.catalystoneMappingApiBaseUrl, accessToken)
       .then(({ employmentId }) =>
         fetchSalaryComparison(env.catalystoneApiBaseUrl, employmentId, accessToken),
       )

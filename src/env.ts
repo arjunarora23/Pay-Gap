@@ -5,6 +5,7 @@ export const env = {
   catalystoneRedirectUri: 'https://arjunarora23.github.io/Pay-Gap/callback',
   catalystoneScope: 'profile',
   catalystoneApiBaseUrl: 'https://api.devtest.catalystone.io',
+  catalystoneMappingApiBaseUrl: 'https://hrisrefactoringroutinedev1.devtest.catalystone.dev/mono',
 } as const
 
 export type AppEnv = typeof env
