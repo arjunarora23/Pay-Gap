@@ -8,7 +8,7 @@ export default function CallbackPage() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      navigate('/salary-comparison', { replace: true })
+      navigate('/', { replace: true })
     }
   }, [isAuthenticated, isLoading, navigate])
 

@@ -3,7 +3,11 @@
 ## Register Pay-Gap as an OAuth client
 
 1. Create/register an OAuth 2.0 client in CatalystOne for the Pay-Gap SPA.
-2. Set the redirect URI to `http://localhost:5173/callback` for local development.
+2. Set the redirect URI to `http://localhost:5173/Pay-Gap/callback` for local
+   development. The `/Pay-Gap` segment is required because the SPA is mounted under
+   that basename (`BrowserRouter basename="/Pay-Gap"` in `src/main.tsx`); on
+   GitHub Pages the corresponding URL is
+   `https://arjunarora23.github.io/Pay-Gap/callback`.
 3. Request scopes based on your API needs (for example: `openid profile paygap:read`).
 4. Copy the generated client id into your local environment.
 

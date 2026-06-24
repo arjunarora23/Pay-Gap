@@ -12,6 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter basename="/Pay-Gap">
       <AuthProvider>
         <Routes>
+          <Route path="/callback" element={<CallbackPage />} />
           <Route
             path="/"
             element={
@@ -20,7 +21,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               </RequireAuth>
             }
           />
-          <Route path="/" element={<CallbackPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
