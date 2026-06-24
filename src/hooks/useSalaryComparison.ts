@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { env } from '../env'
-import { fetchSalaryComparison, SalaryComparisonResponse } from '../api/salaryComparison'
+import { fetchEmploymentMapping, fetchSalaryComparison, SalaryComparisonResponse } from '../api/salaryComparison'
 
 type UseSalaryComparisonResult =
   | { status: 'idle' }
@@ -22,7 +22,10 @@ export function useSalaryComparison(): UseSalaryComparisonResult {
     let cancelled = false
     setResult({ status: 'loading' })
 
-    fetchSalaryComparison(env.catalystoneApiBaseUrl, env.catalystoneEmploymentId, accessToken)
+    fetchEmploymentMapping(env.catalystoneApiBaseUrl, accessToken)
+      .then(({ employmentId }) =>
+        fetchSalaryComparison(env.catalystoneApiBaseUrl, employmentId, accessToken),
+      )
       .then((data) => {
         if (!cancelled) setResult({ status: 'success', data })
       })

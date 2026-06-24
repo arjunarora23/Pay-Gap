@@ -42,6 +42,29 @@ export interface SalaryComparisonResponse {
   comparison: ComparisonData
 }
 
+export interface EmploymentMappingResponse {
+  employmentId: string
+}
+
+export async function fetchEmploymentMapping(
+  apiBaseUrl: string,
+  accessToken: string,
+): Promise<EmploymentMappingResponse> {
+  const url = `${apiBaseUrl}/employments/mapping`
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: 'application/hal+json',
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch employment mapping: ${response.status} ${response.statusText}`)
+  }
+
+  return response.json() as Promise<EmploymentMappingResponse>
+}
+
 export async function fetchSalaryComparison(
   apiBaseUrl: string,
   employmentId: string,
