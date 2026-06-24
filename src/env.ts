@@ -4,6 +4,7 @@ const requiredEnvVars = [
   'VITE_CATALYSTONE_CLIENT_ID',
   'VITE_CATALYSTONE_REDIRECT_URI',
   'VITE_CATALYSTONE_SCOPE',
+  'VITE_CATALYSTONE_API_BASE_URL',
 ] as const
 
 type RequiredEnvVar = (typeof requiredEnvVars)[number]
@@ -24,6 +25,7 @@ export const env = {
   catalystoneClientId: getEnvVar('VITE_CATALYSTONE_CLIENT_ID'),
   catalystoneRedirectUri: getEnvVar('VITE_CATALYSTONE_REDIRECT_URI'),
   catalystoneScope: getEnvVar('VITE_CATALYSTONE_SCOPE'),
+  catalystoneApiBaseUrl: getEnvVar('VITE_CATALYSTONE_API_BASE_URL'),
 } as const
 
 export type AppEnv = typeof env
