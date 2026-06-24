@@ -7,8 +7,11 @@ export default function CallbackPage() {
   const { isAuthenticated, isLoading } = useAuth()
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
+    if (isLoading) return
+    if (isAuthenticated) {
       navigate('/salary-comparison', { replace: true })
+    } else {
+      navigate('/login', { replace: true })
     }
   }, [isAuthenticated, isLoading, navigate])
 

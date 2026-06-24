@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
+import { Navigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
-import LoginPage from '../pages/LoginPage'
 
 export default function RequireAuth({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth()
@@ -14,7 +14,7 @@ export default function RequireAuth({ children }: { children: ReactNode }) {
   }
 
   if (!isAuthenticated) {
-    return <LoginPage />
+    return <Navigate to="/login" replace />
   }
 
   return <>{children}</>

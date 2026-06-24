@@ -1,10 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import App from './App.tsx'
 import { AuthProvider } from './auth/AuthContext.tsx'
 import RequireAuth from './auth/RequireAuth.tsx'
 import CallbackPage from './pages/CallbackPage.tsx'
+import LoginPage from './pages/LoginPage.tsx'
+import SalaryComparison from './pages/SalaryComparison.tsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -12,11 +13,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter basename="/Pay-Gap">
       <AuthProvider>
         <Routes>
+          <Route path="/login" element={<LoginPage />} />
           <Route
-            path="/"
+            path="/salary-comparison"
             element={
               <RequireAuth>
-                <App />
+                <SalaryComparison />
               </RequireAuth>
             }
           />
