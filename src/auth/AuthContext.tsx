@@ -1,61 +1,47 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { ACCESS_TOKEN_KEY, clearAuth, getStoredToken, startOAuthFlow } from './oauth'
+import { createContext, useCallback, useContext, useMemo } from 'react'
+import { AuthProvider as OAuthProvider, useAuthContext } from 'react-oauth2-code-pkce'
+import { authConfig } from './authConfig'
 
-type AuthState = {
+type AuthContextValue = {
   accessToken: string | null
   isAuthenticated: boolean
   isLoading: boolean
-}
-
-type AuthContextValue = AuthState & {
-  login: () => Promise<void>
+  login: () => void
   logout: () => void
-  setAccessToken: (token: string | null) => void
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [accessToken, setAccessTokenState] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+function AuthBridge({ children }: { children: React.ReactNode }) {
+  const { token, loginInProgress, logIn, logOut } = useAuthContext()
 
-  useEffect(() => {
-    setAccessTokenState(getStoredToken())
-    setIsLoading(false)
-  }, [])
-
-  const setAccessToken = (token: string | null) => {
-    if (token) {
-      sessionStorage.setItem(ACCESS_TOKEN_KEY, token)
-    } else {
-      sessionStorage.removeItem(ACCESS_TOKEN_KEY)
-    }
-
-    setAccessTokenState(token)
-  }
-
-  const login = async () => {
-    await startOAuthFlow()
-  }
-
-  const logout = () => {
-    clearAuth()
-    setAccessTokenState(null)
-  }
+  const login = useCallback(() => {
+    const state = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) =>
+      b.toString(16).padStart(2, '0'),
+    ).join('')
+    logIn(state)
+  }, [logIn])
 
   const value = useMemo(
     () => ({
-      accessToken,
-      isAuthenticated: Boolean(accessToken),
-      isLoading,
+      accessToken: token || null,
+      isAuthenticated: Boolean(token),
+      isLoading: loginInProgress,
       login,
-      logout,
-      setAccessToken,
+      logout: logOut,
     }),
-    [accessToken, isLoading],
+    [token, loginInProgress, login, logOut],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <OAuthProvider authConfig={authConfig}>
+      <AuthBridge>{children}</AuthBridge>
+    </OAuthProvider>
+  )
 }
 
 export function useAuth(): AuthContextValue {
