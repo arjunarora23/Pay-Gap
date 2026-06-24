@@ -19,6 +19,7 @@ import { useSalaryComparison } from './hooks/useSalaryComparison'
 import HRDashboard from './pages/HRDashboard'
 import type { EmployeeRecord } from './hooks/useHRDashboard'
 import type { SalaryComparisonResponse } from './api/salaryComparison'
+import { env } from './env'
 
 function SkeletonBlock({ className }: { className?: string }) {
   return (
@@ -69,6 +70,9 @@ export default function App() {
 
   const { isAuthenticated } = useAuth()
   const salaryResult = useSalaryComparison()
+  const isHRUser =
+    salaryResult.status === 'success' &&
+    salaryResult.employmentId === env.hrDashboardEmploymentId
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -142,7 +146,9 @@ export default function App() {
                   {view === 'hr-dashboard'
                     ? 'HR Dashboard'
                     : selectedEmployee
-                    ? 'Pay Profile'
+                    ? `${selectedEmployee.name}'s Pay Profile`
+                    : salaryResult.status === 'success' && salaryResult.employeeName
+                    ? `${salaryResult.employeeName}'s Pay Profile`
                     : 'My Pay Profile'}
                 </h1>
               )}
@@ -196,7 +202,7 @@ export default function App() {
           </header>
 
           {/* Tab navigation for authenticated HR managers */}
-          {isAuthenticated && (
+          {isHRUser && (
             <div className="mb-8 border-b border-slate-200 dark:border-slate-800">
               <div className="flex gap-1">
                 <button
@@ -207,7 +213,7 @@ export default function App() {
                       : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
                   }`}
                 >
-                  My Pay Profile
+                  {selectedEmployee ? 'Pay Profile' : 'My Pay Profile'}
                 </button>
                 <button
                   onClick={() => setView('hr-dashboard')}
@@ -223,13 +229,15 @@ export default function App() {
             </div>
           )}
 
-          {/* HR Dashboard — always mounted so state survives tab switches */}
-          <div className={view === 'hr-dashboard' ? '' : 'hidden'}>
-            <HRDashboard
-              onViewEmployee={handleViewEmployee}
-              currentEmploymentId={salaryResult.status === 'success' ? salaryResult.employmentId : undefined}
-            />
-          </div>
+          {/* HR Dashboard — only mounted for the designated HR user */}
+          {isHRUser && (
+            <div className={view === 'hr-dashboard' ? '' : 'hidden'}>
+              <HRDashboard
+                onViewEmployee={handleViewEmployee}
+                currentEmploymentId={salaryResult.status === 'success' ? salaryResult.employmentId : undefined}
+              />
+            </div>
+          )}
 
           <div className={view !== 'hr-dashboard' ? '' : 'hidden'}>
             <>
