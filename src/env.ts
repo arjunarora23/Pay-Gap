@@ -22,6 +22,7 @@ function getEnvVar(key: RequiredEnvVar): string {
 export const env = {
   catalystoneAuthUrl: getEnvVar('VITE_CATALYSTONE_AUTH_URL'),
   catalystoneTokenUrl: getEnvVar('VITE_CATALYSTONE_TOKEN_URL'),
+  catalystoneClientSecret: getEnvVar('VITE_CATALYSTONE_CLIENT_SECRET'),
   catalystoneClientId: getEnvVar('VITE_CATALYSTONE_CLIENT_ID'),
   catalystoneRedirectUri: getEnvVar('VITE_CATALYSTONE_REDIRECT_URI'),
   catalystoneScope: getEnvVar('VITE_CATALYSTONE_SCOPE'),
