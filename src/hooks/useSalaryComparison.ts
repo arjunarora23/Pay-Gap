@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { env } from '../env'
-import { fetchEmploymentMapping, fetchSalaryComparison, SalaryComparisonResponse } from '../api/salaryComparison'
+import {
+  fetchEmploymentMapping,
+  fetchEmploymentDetails,
+  fetchSalaryComparison,
+  SalaryComparisonResponse,
+} from '../api/salaryComparison'
 
 type UseSalaryComparisonResult =
   | { status: 'idle' }
   | { status: 'loading' }
-  | { status: 'success'; data: SalaryComparisonResponse }
+  | { status: 'success'; data: SalaryComparisonResponse; employeeName: string }
   | { status: 'error'; error: Error }
 
 export function useSalaryComparison(): UseSalaryComparisonResult {
@@ -23,11 +28,17 @@ export function useSalaryComparison(): UseSalaryComparisonResult {
     setResult({ status: 'loading' })
 
     fetchEmploymentMapping(env.catalystoneMappingApiBaseUrl, accessToken)
-      .then(({ employmentId }) =>
-        fetchSalaryComparison(env.catalystoneApiBaseUrl, employmentId, accessToken),
+      .then(({ employmentGuid }) =>
+        Promise.all([
+          fetchSalaryComparison(env.catalystoneMappingApiBaseUrl, employmentGuid, accessToken),
+          fetchEmploymentDetails(env.catalystoneMappingApiBaseUrl, employmentGuid, accessToken),
+        ]),
       )
-      .then((data) => {
-        if (!cancelled) setResult({ status: 'success', data })
+      .then(([data, details]) => {
+        if (!cancelled) {
+          const { firstName, lastName } = details.employee
+          setResult({ status: 'success', data, employeeName: `${firstName} ${lastName}` })
+        }
       })
       .catch((error: unknown) => {
         if (!cancelled) {

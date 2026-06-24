@@ -43,7 +43,7 @@ export interface SalaryComparisonResponse {
 }
 
 export interface EmploymentMappingResponse {
-  employmentId: string
+  employmentGuid: string
 }
 
 export async function fetchEmploymentMapping(
@@ -54,7 +54,7 @@ export async function fetchEmploymentMapping(
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      Accept: 'application/hal+json',
+      Accept: '*/*',
     },
   })
 
@@ -65,12 +65,39 @@ export async function fetchEmploymentMapping(
   return response.json() as Promise<EmploymentMappingResponse>
 }
 
+export interface EmploymentDetailsResponse {
+  employee: {
+    firstName: string
+    lastName: string
+  }
+}
+
+export async function fetchEmploymentDetails(
+  apiBaseUrl: string,
+  employmentGuid: string,
+  accessToken: string,
+): Promise<EmploymentDetailsResponse> {
+  const url = `${apiBaseUrl}/employments/${employmentGuid}`
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: '*/*',
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch employment details: ${response.status} ${response.statusText}`)
+  }
+
+  return response.json() as Promise<EmploymentDetailsResponse>
+}
+
 export async function fetchSalaryComparison(
   apiBaseUrl: string,
-  employmentId: string,
+  employmentGuid: string,
   accessToken: string,
 ): Promise<SalaryComparisonResponse> {
-  const url = `${apiBaseUrl}/employments/${employmentId}/salary-comparison`
+  const url = `${apiBaseUrl}/employments/${employmentGuid}/salary-comparison`
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${accessToken}`,

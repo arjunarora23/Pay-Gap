@@ -70,14 +70,21 @@ export default function App() {
     }
   }, [isAuthenticated, salaryResult.status])
 
-  // Derive display data: use live API data when authenticated and successful, else fall back to mock
+  const displayName =
+    isAuthenticated && salaryResult.status === 'success'
+      ? salaryResult.employeeName
+      : employeeData.name
+
   const displayData =
-    isAuthenticated && salaryResult.status === 'success' ? salaryResult.data : salaryData
+    isAuthenticated && salaryResult.status === 'success' && salaryResult.data?.comparison != null
+      ? salaryResult.data
+      : salaryData
 
   const { currentSalary, salaryBand, comparison } = displayData
   const amount = currentSalary.components.basicSalary.amount
   const rawCurrency = currentSalary.components.basicSalary.currency
   const currency = typeof rawCurrency === 'string' ? rawCurrency : (rawCurrency.name || rawCurrency.id)
+  const positionTitle = salaryBand.position.title
   const { min, max } = salaryBand
   const median = comparison.sameRoleMedian
   const bandRange = max - min
@@ -109,17 +116,13 @@ export default function App() {
               transition={{ duration: 0.5 }}
             >
               <h1 className="text-3xl font-semibold text-slate-900 dark:text-white tracking-tight">
-                {employeeData.name}'s Pay Profile
+                {displayName}'s Pay Profile
               </h1>
               {isLoading ? (
                 <div className="h-6 w-48 bg-slate-200 dark:bg-slate-800 animate-pulse rounded mt-2" />
               ) : (
                 <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg">
-                  {employeeData.title}
-                  <span className="mx-2 opacity-50">•</span>
-                  <span className="font-medium text-slate-800 dark:text-slate-200">
-                    Band: {salaryBand.position.title}
-                  </span>
+                  {positionTitle}
                 </p>
               )}
             </motion.div>
@@ -219,8 +222,11 @@ export default function App() {
                       <div className="text-4xl font-bold text-slate-900 dark:text-white">
                         {formatCurrency(amount, currency)}
                       </div>
-                      <div className="text-sm font-semibold px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300">
-                        {formatPercent(comparison.yourPositionVsMedian)}
+                      <div className={`text-sm font-semibold px-2 py-0.5 rounded-md ${comparison.yourPositionVsMedian >= 0
+                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
+                          : 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300'
+                        }`}>
+                        {comparison.yourPositionVsMedian >= 0 ? '+' : ''}{formatPercent(comparison.yourPositionVsMedian)}
                       </div>
                     </div>
                     <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
