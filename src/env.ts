@@ -2,7 +2,6 @@ const requiredEnvVars = [
   'VITE_CATALYSTONE_AUTH_URL',
   'VITE_CATALYSTONE_TOKEN_URL',
   'VITE_CATALYSTONE_CLIENT_ID',
-  'VITE_CATALYSTONE_CLIENT_SECRET',
   'VITE_CATALYSTONE_REDIRECT_URI',
   'VITE_CATALYSTONE_SCOPE',
 ] as const
@@ -23,7 +22,6 @@ export const env = {
   catalystoneAuthUrl: getEnvVar('VITE_CATALYSTONE_AUTH_URL'),
   catalystoneTokenUrl: getEnvVar('VITE_CATALYSTONE_TOKEN_URL'),
   catalystoneClientId: getEnvVar('VITE_CATALYSTONE_CLIENT_ID'),
-  catalystoneClientSecret: getEnvVar('VITE_CATALYSTONE_CLIENT_SECRET'),
   catalystoneRedirectUri: getEnvVar('VITE_CATALYSTONE_REDIRECT_URI'),
   catalystoneScope: getEnvVar('VITE_CATALYSTONE_SCOPE'),
 } as const

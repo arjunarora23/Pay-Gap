@@ -29,7 +29,6 @@ export async function startOAuthFlow(): Promise<void> {
   const authorizeUrl = new URL(env.catalystoneAuthUrl)
   authorizeUrl.searchParams.set('response_type', 'code')
   authorizeUrl.searchParams.set('client_id', env.catalystoneClientId)
-  authorizeUrl.searchParams.set('client_secret', env.catalystoneClientSecret)
   authorizeUrl.searchParams.set('redirect_uri', env.catalystoneRedirectUri)
   authorizeUrl.searchParams.set('scope', env.catalystoneScope)
   authorizeUrl.searchParams.set('state', state)
