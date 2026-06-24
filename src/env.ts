@@ -1,31 +1,10 @@
-const requiredEnvVars = [
-  'VITE_CATALYSTONE_AUTH_URL',
-  'VITE_CATALYSTONE_TOKEN_URL',
-  'VITE_CATALYSTONE_CLIENT_ID',
-  'VITE_CATALYSTONE_REDIRECT_URI',
-  'VITE_CATALYSTONE_SCOPE',
-  'VITE_CATALYSTONE_API_BASE_URL',
-] as const
-
-type RequiredEnvVar = (typeof requiredEnvVars)[number]
-
-function getEnvVar(key: RequiredEnvVar): string {
-  const value = import.meta.env[key]
-
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${key}`)
-  }
-
-  return value
-}
-
 export const env = {
-  catalystoneAuthUrl: getEnvVar('VITE_CATALYSTONE_AUTH_URL'),
-  catalystoneTokenUrl: getEnvVar('VITE_CATALYSTONE_TOKEN_URL'),
-  catalystoneClientId: getEnvVar('VITE_CATALYSTONE_CLIENT_ID'),
-  catalystoneRedirectUri: getEnvVar('VITE_CATALYSTONE_REDIRECT_URI'),
-  catalystoneScope: getEnvVar('VITE_CATALYSTONE_SCOPE'),
-  catalystoneApiBaseUrl: getEnvVar('VITE_CATALYSTONE_API_BASE_URL'),
+  catalystoneAuthUrl: 'https://api.devtest.catalystone.dev/auth2/oauth2/authorize',
+  catalystoneTokenUrl: 'https://api.devtest.catalystone.dev/auth2/oauth2/token',
+  catalystoneClientId: '4db53012-a3f1-49c7-8ed3-1d4a8306f2e6',
+  catalystoneRedirectUri: 'https://arjunarora23.github.io/Pay-Gap/callback',
+  catalystoneScope: 'profile',
+  catalystoneApiBaseUrl: 'https://api.devtest.catalystone.dev',
 } as const
 
 export type AppEnv = typeof env
