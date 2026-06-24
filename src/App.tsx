@@ -13,6 +13,7 @@ import {
 import { Sun, Moon, ChevronDown } from 'lucide-react'
 import { salaryData, employeeData } from './data'
 import { formatCurrency, formatPercent, ordinalSuffix, generateGaussianCurve } from './utils'
+import LoginButton from './components/LoginButton'
 
 function SkeletonBlock({ className }: { className?: string }) {
   return (
@@ -106,39 +107,42 @@ export default function App() {
               )}
             </motion.div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsDark(!isDark)}
-              className="relative p-2.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 transition-colors overflow-hidden w-10 h-10 flex items-center justify-center"
-              aria-label="Toggle Dark Mode"
-            >
-              <AnimatePresence mode="wait" initial={false}>
-                {isDark ? (
-                  <motion.div
-                    key="moon"
-                    initial={{ y: 30, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -30, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="absolute"
-                  >
-                    <Moon className="w-5 h-5" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="sun"
-                    initial={{ y: 30, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -30, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="absolute"
-                  >
-                    <Sun className="w-5 h-5" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.button>
+            <div className="flex items-center gap-3">
+              <LoginButton />
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsDark(!isDark)}
+                className="relative p-2.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 transition-colors overflow-hidden w-10 h-10 flex items-center justify-center"
+                aria-label="Toggle Dark Mode"
+              >
+                <AnimatePresence mode="wait" initial={false}>
+                  {isDark ? (
+                    <motion.div
+                      key="moon"
+                      initial={{ y: 30, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -30, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute"
+                    >
+                      <Moon className="w-5 h-5" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="sun"
+                      initial={{ y: 30, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -30, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute"
+                    >
+                      <Sun className="w-5 h-5" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+            </div>
           </header>
 
           {/* Loading skeleton */}
