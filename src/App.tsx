@@ -14,6 +14,8 @@ import { Sun, Moon, ChevronDown } from 'lucide-react'
 import { salaryData, employeeData } from './data'
 import { formatCurrency, formatPercent, ordinalSuffix, generateGaussianCurve } from './utils'
 import LoginButton from './components/LoginButton'
+import { useAuth } from './auth/AuthContext'
+import { useSalaryComparison } from './hooks/useSalaryComparison'
 
 function SkeletonBlock({ className }: { className?: string }) {
   return (
@@ -53,14 +55,29 @@ export default function App() {
   const [isAccordionOpen, setIsAccordionOpen] = useState(false)
   const [isActionOpen, setIsActionOpen] = useState(false)
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1200)
-    return () => clearTimeout(timer)
-  }, [])
+  const { isAuthenticated } = useAuth()
+  const salaryResult = useSalaryComparison()
 
-  const { currentSalary, salaryBand, comparison } = salaryData
+  useEffect(() => {
+    if (!isAuthenticated) {
+      const timer = setTimeout(() => setIsLoading(false), 1200)
+      return () => clearTimeout(timer)
+    }
+    if (salaryResult.status === 'loading' || salaryResult.status === 'idle') {
+      setIsLoading(true)
+    } else {
+      setIsLoading(false)
+    }
+  }, [isAuthenticated, salaryResult.status])
+
+  // Derive display data: use live API data when authenticated and successful, else fall back to mock
+  const displayData =
+    isAuthenticated && salaryResult.status === 'success' ? salaryResult.data : salaryData
+
+  const { currentSalary, salaryBand, comparison } = displayData
   const amount = currentSalary.components.basicSalary.amount
-  const currency = currentSalary.components.basicSalary.currency
+  const rawCurrency = currentSalary.components.basicSalary.currency
+  const currency = typeof rawCurrency === 'string' ? rawCurrency : (rawCurrency.name || rawCurrency.id)
   const { min, max } = salaryBand
   const median = comparison.sameRoleMedian
   const bandRange = max - min
@@ -159,6 +176,23 @@ export default function App() {
               <div className="space-y-6">
                 <SkeletonBlock className="h-80" />
                 <SkeletonBlock className="h-64" />
+              </div>
+            </div>
+          ) : isAuthenticated && salaryResult.status === 'error' ? (
+            <div className="flex flex-col items-center justify-center py-24 gap-6">
+              <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-rose-200 dark:border-rose-800 text-center max-w-md w-full">
+                <p className="text-lg font-semibold text-rose-600 dark:text-rose-400 mb-2">
+                  Failed to load salary data
+                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                  {salaryResult.error.message}
+                </p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="bg-indigo-600 text-white font-medium px-6 py-3 rounded-xl shadow-md hover:bg-indigo-700 transition-colors"
+                >
+                  Retry
+                </button>
               </div>
             </div>
           ) : (
@@ -461,7 +495,7 @@ export default function App() {
           )}
 
           {/* How is this calculated? accordion */}
-          {!isLoading && (
+          {!isLoading && !(isAuthenticated && salaryResult.status === 'error') && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
