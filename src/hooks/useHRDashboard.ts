@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 import { env } from '../env'
-import { fetchHRPositions, fetchPositionEmployments } from '../api/hrDashboard'
+import { fetchReferringPositions } from '../api/hrDashboard'
 import { fetchSalaryComparison, fetchEmploymentDetails } from '../api/salaryComparison'
 import type { SalaryComparisonResponse } from '../api/salaryComparison'
 
@@ -85,22 +85,9 @@ export function useHRDashboard(): UseHRDashboardResult {
 
     void (async () => {
       try {
-        const positionItems = await fetchHRPositions(env.catalystonePositionApiBaseUrl, accessToken)
-        if (cancelled) return
-
-        const employmentsByPosition = await Promise.all(
-          positionItems.map(async (pos) => {
-            try {
-              const emps = await fetchPositionEmployments(
-                env.catalystoneMappingApiBaseUrl,
-                pos.id,
-                accessToken,
-              )
-              return { pos, emps }
-            } catch {
-              return { pos, emps: [] }
-            }
-          }),
+        const employmentsByPosition = await fetchReferringPositions(
+          env.catalystoneMappingApiBaseUrl,
+          accessToken,
         )
         if (cancelled) return
 
