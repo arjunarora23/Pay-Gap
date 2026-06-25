@@ -11,30 +11,16 @@ export interface EmploymentItem {
   id: string
 }
 
-export async function fetchHRPositions(
-  positionApiBaseUrl: string,
-  accessToken: string,
-): Promise<PositionItem[]> {
-  const url = `${positionApiBaseUrl}/job-architecture/positions`
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Accept: 'application/json',
-    },
-  })
-  if (!response.ok) {
-    throw new Error(`Failed to fetch positions: ${response.status} ${response.statusText}`)
-  }
-  const data = (await response.json()) as { items?: PositionItem[] }
-  return data.items ?? []
+export interface ReferringPosition {
+  pos: PositionItem
+  emps: EmploymentItem[]
 }
 
-export async function fetchPositionEmployments(
+export async function fetchReferringPositions(
   monoBaseUrl: string,
-  positionId: string,
   accessToken: string,
-): Promise<EmploymentItem[]> {
-  const url = `${monoBaseUrl}/positions/${positionId}/employments`
+): Promise<ReferringPosition[]> {
+  const url = `${monoBaseUrl}/employments/positions`
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -42,12 +28,18 @@ export async function fetchPositionEmployments(
     },
   })
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch employments for position ${positionId}: ${response.status} ${response.statusText}`,
-    )
+    throw new Error(`Failed to fetch referring positions: ${response.status} ${response.statusText}`)
   }
   const data = (await response.json()) as {
-    _embedded?: { employments?: EmploymentItem[] }
+    _embedded?: {
+      positions?: Array<
+        PositionItem & { _embedded?: { employments?: EmploymentItem[] } }
+      >
+    }
   }
-  return data._embedded?.employments ?? []
+  const positions = data._embedded?.positions ?? []
+  return positions.map((pos) => ({
+    pos: { id: pos.id, representation: pos.representation },
+    emps: pos._embedded?.employments ?? [],
+  }))
 }
