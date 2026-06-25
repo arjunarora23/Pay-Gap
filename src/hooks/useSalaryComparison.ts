@@ -30,7 +30,7 @@ export function useSalaryComparison(): UseSalaryComparisonResult {
     fetchEmploymentMapping(env.catalystoneMappingApiBaseUrl, accessToken)
       .then(({ employmentGuid }) =>
         Promise.all([
-          fetchSalaryComparison(env.catalystoneDeveloperPortal, employmentGuid, accessToken),
+          fetchSalaryComparison(env.catalystoneMappingApiBaseUrl, employmentGuid, accessToken),
           fetchEmploymentDetails(env.catalystoneMappingApiBaseUrl, employmentGuid, accessToken),
           Promise.resolve(employmentGuid),
         ]),

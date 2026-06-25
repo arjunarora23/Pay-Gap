@@ -125,7 +125,7 @@ export function useHRDashboard(): UseHRDashboardResult {
               emps.map(async (emp) => {
                 try {
                   const [comp, details] = await Promise.all([
-                    fetchSalaryComparison(env.catalystoneDeveloperPortal, emp.id, accessToken),
+                    fetchSalaryComparison(env.catalystoneMappingApiBaseUrl, emp.id, accessToken),
                     fetchEmploymentDetails(env.catalystoneMappingApiBaseUrl, emp.id, accessToken).catch(() => null),
                   ])
                   return { empId: emp.id, comp, details }
