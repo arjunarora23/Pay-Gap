@@ -86,14 +86,6 @@ export default function App() {
     }
   }, [isAuthenticated, salaryResult.status])
 
-  const displayName =
-    selectedEmployee?.name ??
-    (isAuthenticated && salaryResult.status === 'success'
-      ? salaryResult.employeeName
-      : !isAuthenticated
-      ? employeeData.name
-      : '')
-
   const displayData =
     selectedEmployee?.data != null
       ? selectedEmployee.data

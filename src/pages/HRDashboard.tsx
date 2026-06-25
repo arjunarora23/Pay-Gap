@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from 'recharts'
+import type { TooltipProps } from 'recharts'
 import { CheckCircle2, ChevronDown, Loader2 } from 'lucide-react'
 import { useHRDashboard } from '../hooks/useHRDashboard'
 import type { HRPositionData, EmployeeRecord } from '../hooks/useHRDashboard'
@@ -35,11 +36,7 @@ function buildGenderDistribution(
   })
 }
 
-type DistTooltipProps = {
-  active?: boolean
-  payload?: { name: string; value: number }[]
-  label?: string
-}
+type DistTooltipProps = TooltipProps<number, string>
 
 function makeDistTooltip(
   maleEmployees: EmployeeRecord[],
